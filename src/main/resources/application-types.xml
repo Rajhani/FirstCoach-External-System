@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="outputmessagefetchRoutes" format="json">
+      <types:shape format="weave" example="examples/Output message for FirstCoach - fetchRoutes .json"><![CDATA[%dw 2.0
+
+type outputmessagefetchRoutes = Array<{|  departureLocationCode: String,   arrivalLocationCode: String|}> {"example": "[{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"KLG-MY\\\"},{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"BU-MY\\\"},{\\\"departureLocationCode\\\":\\\"BEN-SG\\\",\\\"arrivalLocationCode\\\":\\\"TAR-MY\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="inputmessage" format="json">
+      <types:shape format="weave" example="examples/Input message for FirstCoach - getSchedules.json"><![CDATA[%dw 2.0
+
+type inputmessage = {|
+  originLocation: {| locationCode: String |}, 
+  destinationLocation: {| locationCode: String |}
+|} {"example": "{\\\"originLocation\\\":{\\\"locationCode\\\":\\\"BEN-SG\\\"},\\\"destinationLocation\\\":{\\\"locationCode\\\":\\\"KLG-MY\\\"}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="outputfetchSchedules" format="json">
+      <types:shape format="weave" example="examples/Output message for FirstCoach - getSchedules.json"><![CDATA[%dw 2.0
+
+type outputfetchSchedules = {|
+  schedules: Array<{|    departureDateTime: String,     fromLocation: String,     toLocation: String,     availableSeats: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"schedules\\\":[{\\\"departureDateTime\\\":\\\"2019-04-30T16:41:41.090Z\\\",\\\"fromLocation\\\":\\\"BEN-SG\\\",\\\"toLocation\\\":\\\"KLG-MY\\\",\\\"availableSeats\\\":50},{\\\"departureDateTime\\\":\\\"2019-04-30T18:41:41.090Z\\\",\\\"fromLocation\\\":\\\"BEN-SG\\\",\\\"toLocation\\\":\\\"KLG-MY\\\",\\\"availableSeats\\\":10}]}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#dcbb2935-2eef-4d87-9eae-fe6dc4c8830a">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputmessagefetchRoutes"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#99334584-57fe-45d0-a0d5-015a888d5674">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="inputmessage"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputfetchSchedules"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

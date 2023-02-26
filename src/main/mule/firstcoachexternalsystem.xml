@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="7678de43-997c-49dd-9a77-aeb820e4099b" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="GetfetchRoutes" doc:id="594102ed-5e84-4d82-889f-cc139950fdcf" >
+		<http:listener doc:name="Listener" doc:id="de763a0d-7c37-4e81-a750-f07f9b5f59a4" config-ref="HTTP_Listener_config" path="/fetchRoutes "/>
+		<ee:transform doc:name="Transform Message" doc:id="dcbb2935-2eef-4d87-9eae-fe6dc4c8830a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+[ 
+    { 
+        "departureLocationCode": "BEN-SG", 
+        "arrivalLocationCode": "KLG-MY" 
+    }, 
+    { 
+        "departureLocationCode": "BEN-SG", 
+        "arrivalLocationCode": "BU-MY" 
+    }, 
+    { 
+        "departureLocationCode": "BEN-SG", 
+        "arrivalLocationCode": "TAR-MY" 
+    } 
+] 
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="58912dd5-a065-43b0-853e-dbaa3e8a0966" message="#[payload]"/>
+	</flow>
+	<flow name="postfetchSchedules" doc:id="1526113b-cef4-4da8-9d54-43a15d675683" >
+		<http:listener doc:name="Listener" doc:id="782e0569-ffbc-495c-a958-3805a31f11a8" config-ref="HTTP_Listener_config" path="/fetchSchedules"/>
+		<ee:transform doc:name="Transform Message" doc:id="99334584-57fe-45d0-a0d5-015a888d5674" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{ 
+    "schedules": [ 
+ 
+        { 
+            "departureDateTime": "2019-04-30T16:41:41.090Z", 
+            "fromLocation": "BEN-SG", 
+            "toLocation": "KLG-MY", 
+            "availableSeats" : 50 
+        }, 
+        { 
+            "departureDateTime": "2019-04-30T18:41:41.090Z", 
+            "fromLocation": "BEN-SG", 
+            "toLocation": "KLG-MY",
+            "availableSeats" : 10 
+        } 
+    ] 
+} 
+
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="c3dfc21e-e8cb-460b-8dcb-b4326caadd26" message="#[payload]"/>
+	</flow>
+</mule>
